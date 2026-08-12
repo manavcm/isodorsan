@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dorsan QMS · ISO 9001 Management System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#204289; --navy-deep:#16294F; --sky:#37B0E3; --sky-soft:#E4F4FC;
+  --paper:#F5F7FA; --card:#FFFFFF; --ink:#1A2333; --ink-soft:#5A6478;
+  --line:#DDE3EC; --red:#D33A2C; --red-soft:#FCEAE8; --amber:#B97A08; --amber-soft:#FCF3DF;
+  --green:#1E8A5A; --green-soft:#E4F5EC;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'IBM Plex Sans',system-ui,sans-serif;background:var(--paper);color:var(--ink);font-size:14px;line-height:1.5}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:13px}
+
+/* ---- Shell ---- */
+.shell{display:flex;min-height:100vh}
+.side{width:248px;flex-shrink:0;background:var(--navy-deep);color:#C9D6EE;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.brand{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.12)}
+.brand h1{font-family:'Archivo',sans-serif;font-stretch:110%;font-weight:800;font-size:19px;color:#fff;letter-spacing:.02em}
+.brand h1 span{color:var(--sky)}
+.brand p{font-family:var(--mono);font-size:10.5px;color:#8FA5CC;margin-top:3px;letter-spacing:.06em}
+.clause-group{padding:14px 0 4px}
+.clause-label{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#7189B5;padding:0 18px;margin-bottom:6px}
+.nav-item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;color:#C9D6EE;padding:9px 18px;font-size:13.5px;border-left:3px solid transparent}
+.nav-item:hover{background:rgba(255,255,255,.06)}
+.nav-item.active{background:rgba(55,176,227,.14);border-left-color:var(--sky);color:#fff}
+.nav-item .cl{font-family:var(--mono);font-size:10.5px;color:#7189B5;min-width:26px}
+.nav-item.active .cl{color:var(--sky)}
+.side-foot{margin-top:auto;padding:14px 18px;border-top:1px solid rgba(255,255,255,.12);font-family:var(--mono);font-size:10.5px;color:#7189B5;line-height:1.7}
+
+.main{flex:1;min-width:0;padding:26px 30px 60px}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.page-head h2{font-family:'Archivo',sans-serif;font-stretch:105%;font-weight:700;font-size:24px}
+.page-head .sub{font-family:var(--mono);font-size:11px;color:#68789A;letter-spacing:.08em;margin-top:4px}
+
+/* ---- Cards, KPIs ---- */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:22px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.kpi .n{font-family:'Archivo',sans-serif;font-weight:800;font-size:30px;line-height:1.1}
+.kpi .l{font-size:12px;color:#68789A;margin-top:2px}
+.kpi.bad .n{color:var(--red)} .kpi.warn .n{color:var(--amber)} .kpi.ok .n{color:var(--green)} .kpi.info .n{color:var(--navy)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;margin-bottom:18px;overflow:hidden}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 16px;border-bottom:1px solid var(--line)}
+.card-h h3{font-family:'Archivo',sans-serif;font-weight:700;font-size:15px}
+.card-b{padding:16px}
+
+/* ---- Tables ---- */
+table{width:100%;border-collapse:collapse}
+th{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:#68789A;text-align:left;padding:9px 14px;border-bottom:1px solid var(--line);background:#FAFBFD}
+td{padding:10px 14px;border-bottom:1px solid #EDF0F5;font-size:13px;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr.rowhov:hover{background:#F7FAFD}
+.code{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--navy);white-space:nowrap}
+.rev{font-family:var(--mono);font-size:11px;color:#68789A}
+.muted{color:#68789A;font-size:12px}
+
+/* ---- Badges & buttons ---- */
+.badge{display:inline-block;font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.04em;padding:3px 8px;border-radius:20px;white-space:nowrap}
+.b-navy{background:var(--sky-soft);color:var(--navy)}
+.b-green{background:var(--green-soft);color:var(--green)}
+.b-amber{background:var(--amber-soft);color:var(--amber)}
+.b-red{background:var(--red-soft);color:var(--red)}
+.b-grey{background:#EEF1F6;color:#5A6478}
+.btn{border:none;border-radius:7px;padding:8px 14px;font-size:13px;font-weight:600}
+.btn-p{background:var(--navy);color:#fff} .btn-p:hover{background:#2A54AC}
+.btn-s{background:#fff;color:var(--navy);border:1px solid var(--line)} .btn-s:hover{border-color:var(--navy)}
+.btn-xs{padding:4px 9px;font-size:11.5px;border-radius:6px}
+.btn-ok{background:var(--green-soft);color:var(--green)} .btn-warn{background:var(--amber-soft);color:var(--amber)} .btn-bad{background:var(--red-soft);color:var(--red)}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.search{padding:8px 12px;border:1px solid var(--line);border-radius:7px;min-width:200px}
+select.filter{padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:#fff}
+
+/* ---- Modal ---- */
+.overlay{position:fixed;inset:0;background:rgba(22,41,79,.45);display:none;align-items:flex-start;justify-content:center;padding:40px 16px;z-index:50;overflow-y:auto}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:12px;width:100%;max-width:520px;padding:22px}
+.modal h3{font-family:'Archivo',sans-serif;font-size:17px;margin-bottom:16px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12px;font-weight:600;color:#3A4560;margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:7px}
+.field textarea{min-height:70px;resize:vertical}
+.modal-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+
+/* ---- Misc ---- */
+.timeline{list-style:none}
+.timeline li{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid #EDF0F5;font-size:13px}
+.timeline li:last-child{border-bottom:none}
+.timeline .t{font-family:var(--mono);font-size:11px;color:#68789A;min-width:82px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.matrix-dot{width:14px;height:14px;border-radius:4px;display:inline-block}
+.toast{position:fixed;bottom:22px;right:22px;background:var(--navy-deep);color:#fff;padding:11px 16px;border-radius:8px;font-size:13px;opacity:0;transform:translateY(8px);transition:.25s;pointer-events:none;z-index:99}
+.toast.show{opacity:1;transform:none}
+.menu-btn{display:none}
+@media(max-width:860px){
+  .side{position:fixed;left:-260px;transition:left .25s;z-index:60}
+  .side.open{left:0}
+  .menu-btn{display:inline-flex;background:var(--navy);color:#fff;border:none;border-radius:7px;padding:8px 12px;font-weight:600;margin-bottom:14px}
+  .main{padding:18px 16px 60px}
+  .grid-2{grid-template-columns:1fr}
+  .table-wrap{overflow-x:auto}
+}
+.table-wrap{overflow-x:auto}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="side" id="side">
+    <div class="brand">
+      <h1>DORSAN <span>QMS</span></h1>
+      <p>ISO 9001:2015 · DFI-AHMEDABAD</p>
+    </div>
+    <div class="clause-group">
+      <div class="clause-label">Overview</div>
+      <button class="nav-item active" data-view="dash"><span class="cl">—</span> Dashboard</button>
+    </div>
+    <div class="clause-group">
+      <div class="clause-label">ISO 9001 Clauses</div>
+      <button class="nav-item" data-view="docs"><span class="cl">7.5</span> Document Control</button>
+      <button class="nav-item" data-view="training"><span class="cl">7.2</span> Training &amp; Competence</button>
+      <button class="nav-item" data-view="audits"><span class="cl">9.2</span> Internal Audits</button>
+      <button class="nav-item" data-view="mrm"><span class="cl">9.3</span> Management Review</button>
+      <button class="nav-item" data-view="ncr"><span class="cl">10.2</span> Nonconformity (NCR)</button>
+      <button class="nav-item" data-view="capa"><span class="cl">10.2</span> CAPA Register</button>
+    </div>
+    <div class="side-foot">
+      Dorsan Filtration India Pvt. Ltd.<br>
+      Controlled electronic system.<br>
+      Printed copies are UNCONTROLLED.
+    </div>
+  </aside>
+
+  <main class="main">
+    <button class="menu-btn" onclick="document.getElementById('side').classList.toggle('open')">☰ Menu</button>
+
+    <!-- DASHBOARD -->
+    <section id="view-dash">
+      <div class="page-head">
+        <div><h2>Quality Dashboard</h2><div class="sub">STATUS AS OF <span id="todayStr"></span></div></div>
+      </div>
+      <div class="kpis" id="kpiRow"></div>
+      <div class="grid-2">
+        <div class="card"><div class="card-h"><h3>Documents awaiting approval</h3></div><div class="table-wrap"><table id="dashDocs"></table></div></div>
+        <div class="card"><div class="card-h"><h3>Overdue &amp; upcoming actions</h3></div><div class="card-b"><ul class="timeline" id="dashActions"></ul></div></div>
+      </div>
+      <div class="card"><div class="card-h"><h3>Recent activity</h3></div><div class="card-b"><ul class="timeline" id="activityLog"></ul></div></div>
+    </section>
+
+    <!-- DOCUMENT CONTROL -->
+    <section id="view-docs" hidden>
+      <div class="page-head">
+        <div><h2>Document Control</h2><div class="sub">CLAUSE 7.5 · DOCUMENTED INFORMATION · MASTER LIST</div></div>
+        <button class="btn btn-p" onclick="openDocModal()">+ New document</button>
+      </div>
+      <div class="card">
+        <div class="card-h">
+          <div class="toolbar">
+            <input class="search" id="docSearch" placeholder="Search code or title…" oninput="renderDocs()">
+            <select class="filter" id="docTypeF" onchange="renderDocs()">
+              <option value="">All types</option><option>Quality Manual</option><option>Procedure</option><option>Work Instruction</option><option>Form</option><option>Record</option>
+            </select>
+            <select class="filter" id="docStatusF" onchange="renderDocs()">
+              <option value="">All statuses</option><option>Draft</option><option>Under Review</option><option>Approved</option><option>Obsolete</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-wrap"><table id="docTable"></table></div>
+      </div>
+    </section>
+
+    <!-- TRAINING -->
+    <section id="view-training" hidden>
+      <div class="page-head">
+        <div><h2>Training &amp; Competence</h2><div class="sub">CLAUSE 7.2 · COMPETENCE MATRIX</div></div>
+        <button class="btn btn-p" onclick="openTrainModal()">+ Log training</button>
+      </div>
+      <div class="card"><div class="table-wrap"><table id="trainTable"></table></div></div>
+    </section>
+
+    <!-- AUDITS -->
+    <section id="view-audits" hidden>
+      <div class="page-head">
+        <div><h2>Internal Audits</h2><div class="sub">CLAUSE 9.2 · ANNUAL AUDIT PROGRAMME 2026</div></div>
+        <button class="btn btn-p" onclick="openAuditModal()">+ Schedule audit</button>
+      </div>
+      <div class="card"><div class="table-wrap"><table id="auditTable"></table></div></div>
+    </section>
+
+    <!-- MRM -->
+    <section id="view-mrm" hidden>
+      <div class="page-head">
+        <div><h2>Management Review</h2><div class="sub">CLAUSE 9.3 · MRM RECORDS</div></div>
+        <button class="btn btn-p" onclick="openMrmModal()">+ New review</button>
+      </div>
+      <div class="card"><div class="table-wrap"><table id="mrmTable"></table></div></div>
+    </section>
+
+    <!-- NCR -->
+    <section id="view-ncr" hidden>
+      <div class="page-head">
+        <div><h2>Nonconformity Register</h2><div class="sub">CLAUSE 10.2 · NCR LOG</div></div>
+        <button class="btn btn-p" onclick="openNcrModal()">+ Raise NCR</button>
+      </div>
+      <div class="card"><div class="table-wrap"><table id="ncrTable"></table></div></div>
+    </section>
+
+    <!-- CAPA -->
+    <section id="view-capa" hidden>
+      <div class="page-head">
+        <div><h2>CAPA Register</h2><div class="sub">CLAUSE 10.2 · CORRECTIVE &amp; PREVENTIVE ACTIONS</div></div>
+        <button class="btn btn-p" onclick="openCapaModal()">+ New CAPA</button>
+      </div>
+      <div class="card"><div class="table-wrap"><table id="capaTable"></table></div></div>
+    </section>
+  </main>
+</div>
+
+<!-- Generic modal -->
+<div class="overlay" id="overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modalBox"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= DATA (in-memory seed) ================= */
+const today = new Date();
+const iso = d => d.toISOString().slice(0,10);
+const addDays = n => { const d=new Date(); d.setDate(d.getDate()+n); return iso(d); };
+
+let docs = [
+ {code:"DFI-QM-001", title:"Quality Manual", type:"Quality Manual", rev:"05", status:"Approved", owner:"Jaimin Shah", review:addDays(320)},
+ {code:"DFI-PR-004", title:"Control of Documented Information", type:"Procedure", rev:"03", status:"Approved", owner:"Kamlesh", review:addDays(150)},
+ {code:"DFI-PR-010", title:"Nonconformity & Corrective Action", type:"Procedure", rev:"02", status:"Approved", owner:"Kamlesh", review:addDays(90)},
+ {code:"DFI-WI-021", title:"Membrane Pleating & Cartridge Assembly", type:"Work Instruction", rev:"04", status:"Under Review", owner:"Production", review:addDays(-6)},
+ {code:"DFI-WI-025", title:"Integrity Testing of PES Cartridges (Bubble Point)", type:"Work Instruction", rev:"01", status:"Under Review", owner:"QC Lab", review:addDays(30)},
+ {code:"DFI-FR-108", title:"Incoming Material Inspection Report", type:"Form", rev:"02", status:"Approved", owner:"QC Lab", review:addDays(200)},
+ {code:"DFI-WI-030", title:"Cleanroom Gowning & Entry Procedure", type:"Work Instruction", rev:"01", status:"Draft", owner:"Jaimin Shah", review:addDays(60)},
+ {code:"DFI-PR-016", title:"Supplier Evaluation & Approval", type:"Procedure", rev:"01", status:"Approved", owner:"Purchase", review:addDays(-15)}
+];
+let ncrs = [
+ {id:"NCR-2026-014", date:addDays(-9), source:"In-process QC", desc:"Bubble point failure on PES 0.22µm cartridge lot B-2607 (3 of 50 pcs below spec).", severity:"Major", status:"Open", capa:"CAPA-2026-009"},
+ {id:"NCR-2026-013", date:addDays(-21), source:"Customer complaint", desc:"Vimeds Pharma reported O-ring damage on delivery carton — 2 cartridges.", severity:"Minor", status:"Closed", capa:"CAPA-2026-008"},
+ {id:"NCR-2026-012", date:addDays(-30), source:"Internal audit", desc:"Obsolete rev.02 of DFI-WI-021 found at pleating station.", severity:"Minor", status:"Closed", capa:"—"}
+];
+let capas = [
+ {id:"CAPA-2026-009", link:"NCR-2026-014", action:"Root cause: membrane roll storage humidity. Install hygrometer logging in membrane store; retrain operators on DFI-WI-021.", owner:"Production Head", due:addDays(5), status:"In Progress"},
+ {id:"CAPA-2026-008", link:"NCR-2026-013", action:"Add corner protectors to export cartons; update packing checklist DFI-FR-112.", owner:"Dispatch", due:addDays(-12), status:"Completed"},
+ {id:"CAPA-2026-007", link:"Audit A-2026-02", action:"Sweep all workstations for obsolete printed documents; stamp UNCONTROLLED on reference copies.", owner:"Kamlesh", due:addDays(-2), status:"In Progress"}
+];
+let audits = [
+ {id:"A-2026-01", area:"Document Control & Records (Cl. 7.5)", auditor:"Kamlesh", date:addDays(-95), status:"Closed", findings:"1 minor NC, 2 observations"},
+ {id:"A-2026-02", area:"Production & Cartridge Assembly (Cl. 8.5)", auditor:"Jaimin Shah", date:addDays(-30), status:"Closed", findings:"1 minor NC (NCR-2026-012)"},
+ {id:"A-2026-03", area:"QC Laboratory & Test Equipment (Cl. 7.1.5)", auditor:"External — Dorsan S.L.", date:addDays(12), status:"Scheduled", findings:"—"},
+ {id:"A-2026-04", area:"Purchasing & Supplier Control (Cl. 8.4)", auditor:"Kamlesh", date:addDays(48), status:"Scheduled", findings:"—"}
+];
+let mrms = [
+ {id:"MRM-2026-01", date:addDays(-140), chair:"Jaimin Shah", inputs:"Audit results, customer feedback, NCR trend, supplier performance", decisions:"Approved cleanroom gowning WI project; budget for hygrometer logging.", status:"Minutes Approved"},
+ {id:"MRM-2026-02", date:addDays(25), chair:"Domingo Sanchez", inputs:"H1 quality objectives review, CAPA effectiveness", decisions:"—", status:"Planned"}
+];
+let trainings = [
+ {emp:"Axay", topic:"GDP & Record Keeping", doc:"DFI-PR-004", date:addDays(-60), valid:addDays(305), status:"Valid"},
+ {emp:"Production Team (6)", topic:"Cartridge Assembly WI rev.04", doc:"DFI-WI-021", date:addDays(-10), valid:addDays(355), status:"Valid"},
+ {emp:"QC Lab (3)", topic:"Bubble Point Integrity Testing", doc:"DFI-WI-025", date:addDays(-370), valid:addDays(-5), status:"Expired"},
+ {emp:"Jahnvi", topic:"ISO 9001:2015 Awareness", doc:"DFI-QM-001", date:addDays(-200), valid:addDays(165), status:"Valid"}
+];
+let activity = [
+ {t:addDays(-2), m:"DFI-WI-025 rev.01 submitted for review by QC Lab."},
+ {t:addDays(-9), m:"NCR-2026-014 raised — bubble point failure, lot B-2607."},
+ {t:addDays(-10), m:"Training on DFI-WI-021 rev.04 completed for production team."},
+ {t:addDays(-12), m:"CAPA-2026-008 verified effective and closed by Kamlesh."}
+];
+
+/* ================= HELPERS ================= */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2600); }
+function log(m){ activity.unshift({t:iso(today), m}); renderDash(); }
+function badge(s){
+  const map={Approved:'b-green',Valid:'b-green',Closed:'b-green',Completed:'b-green','Minutes Approved':'b-green',
+    'Under Review':'b-amber','In Progress':'b-amber',Scheduled:'b-navy',Planned:'b-navy',
+    Draft:'b-grey','—':'b-grey',Open:'b-red',Expired:'b-red',Major:'b-red',Minor:'b-amber',Obsolete:'b-grey'};
+  return `<span class="badge ${map[s]||'b-grey'}">${esc(s)}</span>`;
+}
+function overdue(d){ return d < iso(today); }
+
+/* ================= NAVIGATION ================= */
+document.querySelectorAll('.nav-item').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  document.querySelectorAll('main section').forEach(s=>s.hidden=true);
+  $('view-'+b.dataset.view).hidden=false;
+  $('side').classList.remove('open');
+}));
+
+/* ================= RENDERERS ================= */
+function renderDash(){
+  $('todayStr').textContent = iso(today);
+  const pending = docs.filter(d=>d.status==='Under Review'||d.status==='Draft').length;
+  const openNcr = ncrs.filter(n=>n.status==='Open').length;
+  const odCapa  = capas.filter(c=>c.status!=='Completed'&&overdue(c.due)).length;
+  const odRev   = docs.filter(d=>d.status==='Approved'&&overdue(d.review)).length;
+  const nextAud = audits.filter(a=>a.status==='Scheduled').length;
+  $('kpiRow').innerHTML = `
+    <div class="kpi warn"><div class="n">${pending}</div><div class="l">Docs pending approval</div></div>
+    <div class="kpi bad"><div class="n">${openNcr}</div><div class="l">Open NCRs</div></div>
+    <div class="kpi bad"><div class="n">${odCapa}</div><div class="l">Overdue CAPAs</div></div>
+    <div class="kpi warn"><div class="n">${odRev}</div><div class="l">Docs past review date</div></div>
+    <div class="kpi info"><div class="n">${nextAud}</div><div class="l">Audits scheduled</div></div>`;
+  $('dashDocs').innerHTML = `<tr><th>Code</th><th>Title</th><th>Status</th></tr>` +
+    (docs.filter(d=>d.status==='Under Review'||d.status==='Draft').map(d=>
+      `<tr class="rowhov"><td class="code">${esc(d.code)}</td><td>${esc(d.title)}</td><td>${badge(d.status)}</td></tr>`).join('')
+      || `<tr><td colspan="3" class="muted">Nothing waiting. All documents are current.</td></tr>`);
+  const acts=[];
+  capas.filter(c=>c.status!=='Completed').forEach(c=>acts.push({d:c.due, m:`${c.id} — ${c.owner}`, od:overdue(c.due)}));
+  audits.filter(a=>a.status==='Scheduled').forEach(a=>acts.push({d:a.date, m:`${a.id} — ${a.area}`, od:false}));
+  docs.filter(d=>d.status==='Approved'&&overdue(d.review)).forEach(d=>acts.push({d:d.review, m:`${d.code} periodic review due`, od:true}));
+  acts.sort((a,b)=>a.d.localeCompare(b.d));
+  $('dashActions').innerHTML = acts.map(a=>
+    `<li><span class="t" style="${a.od?'color:var(--red);font-weight:600':''}">${a.d}</span><span>${esc(a.m)} ${a.od?badge('Open'):''}</span></li>`).join('')
+    || '<li class="muted">No pending actions.</li>';
+  $('activityLog').innerHTML = activity.slice(0,8).map(a=>`<li><span class="t">${a.t}</span><span>${esc(a.m)}</span></li>`).join('');
+}
+
+function renderDocs(){
+  const q=($('docSearch').value||'').toLowerCase(), tf=$('docTypeF').value, sf=$('docStatusF').value;
+  const rows = docs.filter(d=>
+    (!q || d.code.toLowerCase().includes(q) || d.title.toLowerCase().includes(q)) &&
+    (!tf || d.type===tf) && (!sf || d.status===sf));
+  $('docTable').innerHTML = `<tr><th>Doc code</th><th>Title</th><th>Type</th><th>Rev</th><th>Status</th><th>Owner</th><th>Next review</th><th></th></tr>` +
+    rows.map((d)=>{ const i=docs.indexOf(d); return `<tr class="rowhov">
+      <td class="code">${esc(d.code)}</td><td>${esc(d.title)}</td><td class="muted">${esc(d.type)}</td>
+      <td class="rev">rev.${esc(d.rev)}</td><td>${badge(d.status)}</td><td>${esc(d.owner)}</td>
+      <td class="rev" style="${overdue(d.review)&&d.status==='Approved'?'color:var(--red);font-weight:600':''}">${d.review}</td>
+      <td style="white-space:nowrap">
+        ${d.status==='Draft'?`<button class="btn btn-xs btn-warn" onclick="docStatus(${i},'Under Review')">Submit</button>`:''}
+        ${d.status==='Under Review'?`<button class="btn btn-xs btn-ok" onclick="docStatus(${i},'Approved')">Approve</button>`:''}
+        ${d.status==='Approved'?`<button class="btn btn-xs btn-warn" onclick="reviseDoc(${i})">Revise</button>`:''}
+        ${d.status!=='Obsolete'?`<button class="btn btn-xs btn-bad" onclick="docStatus(${i},'Obsolete')">Obsolete</button>`:''}
+      </td></tr>`;}).join('')
+    || `<tr><td colspan="8" class="muted">No documents match this filter.</td></tr>`;
+}
+function docStatus(i,s){ docs[i].status=s; log(`${docs[i].code} marked ${s}${s==='Approved'?' by Kamlesh':''}.`); renderDocs(); toast(`${docs[i].code} → ${s}`); }
+function reviseDoc(i){ const d=docs[i]; d.rev=String(Number(d.rev)+1).padStart(2,'0'); d.status='Draft'; log(`${d.code} revision started → rev.${d.rev} (Draft).`); renderDocs(); toast(`${d.code} now rev.${d.rev} (Draft)`); }
+
+function renderNcr(){
+  $('ncrTable').innerHTML = `<tr><th>NCR no.</th><th>Date</th><th>Source</th><th>Description</th><th>Severity</th><th>Linked CAPA</th><th>Status</th><th></th></tr>` +
+    ncrs.map((n,i)=>`<tr class="rowhov">
+      <td class="code">${esc(n.id)}</td><td class="rev">${n.date}</td><td class="muted">${esc(n.source)}</td>
+      <td>${esc(n.desc)}</td><td>${badge(n.severity)}</td><td class="rev">${esc(n.capa)}</td><td>${badge(n.status)}</td>
+      <td>${n.status==='Open'?`<button class="btn btn-xs btn-ok" onclick="closeNcr(${i})">Close</button>`:''}</td></tr>`).join('');
+}
+function closeNcr(i){ ncrs[i].status='Closed'; log(`${ncrs[i].id} closed after disposition & verification.`); renderNcr(); renderDash(); toast(`${ncrs[i].id} closed`); }
+
+function renderCapa(){
+  $('capaTable').innerHTML = `<tr><th>CAPA no.</th><th>Linked to</th><th>Action</th><th>Owner</th><th>Due</th><th>Status</th><th></th></tr>` +
+    capas.map((c,i)=>`<tr class="rowhov">
+      <td class="code">${esc(c.id)}</td><td class="rev">${esc(c.link)}</td><td>${esc(c.action)}</td><td>${esc(c.owner)}</td>
+      <td class="rev" style="${c.status!=='Completed'&&overdue(c.due)?'color:var(--red);font-weight:600':''}">${c.due}</td>
+      <td>${badge(c.status)}</td>
+      <td>${c.status!=='Completed'?`<button class="btn btn-xs btn-ok" onclick="doneCapa(${i})">Complete</button>`:''}</td></tr>`).join('');
+}
+function doneCapa(i){ capas[i].status='Completed'; log(`${capas[i].id} completed; effectiveness check pending next audit.`); renderCapa(); renderDash(); toast(`${capas[i].id} completed`); }
+
+function renderAudits(){
+  $('auditTable').innerHTML = `<tr><th>Audit no.</th><th>Area / clause</th><th>Auditor</th><th>Date</th><th>Findings</th><th>Status</th><th></th></tr>` +
+    audits.map((a,i)=>`<tr class="rowhov">
+      <td class="code">${esc(a.id)}</td><td>${esc(a.area)}</td><td>${esc(a.auditor)}</td><td class="rev">${a.date}</td>
+      <td class="muted">${esc(a.findings)}</td><td>${badge(a.status)}</td>
+      <td>${a.status==='Scheduled'?`<button class="btn btn-xs btn-ok" onclick="closeAudit(${i})">Mark done</button>`:''}</td></tr>`).join('');
+}
+function closeAudit(i){ audits[i].status='Closed'; audits[i].findings='Report pending upload'; log(`${audits[i].id} conducted — report to be attached.`); renderAudits(); renderDash(); toast(`${audits[i].id} closed`); }
+
+function renderMrm(){
+  $('mrmTable').innerHTML = `<tr><th>MRM no.</th><th>Date</th><th>Chair</th><th>Inputs</th><th>Decisions &amp; actions</th><th>Status</th></tr>` +
+    mrms.map(m=>`<tr class="rowhov"><td class="code">${esc(m.id)}</td><td class="rev">${m.date}</td><td>${esc(m.chair)}</td>
+      <td class="muted">${esc(m.inputs)}</td><td>${esc(m.decisions)}</td><td>${badge(m.status)}</td></tr>`).join('');
+}
+
+function renderTrain(){
+  $('trainTable').innerHTML = `<tr><th>Employee / group</th><th>Topic</th><th>Ref. document</th><th>Trained on</th><th>Valid until</th><th>Status</th></tr>` +
+    trainings.map(t=>`<tr class="rowhov"><td>${esc(t.emp)}</td><td>${esc(t.topic)}</td><td class="code">${esc(t.doc)}</td>
+      <td class="rev">${t.date}</td><td class="rev" style="${t.status==='Expired'?'color:var(--red);font-weight:600':''}">${t.valid}</td><td>${badge(t.status)}</td></tr>`).join('');
+}
+
+/* ================= MODALS ================= */
+function closeModal(){ $('overlay').classList.remove('open'); }
+function showModal(html){ $('modalBox').innerHTML=html; $('overlay').classList.add('open'); }
+function fields(list){ return list.map(f=>`<div class="field"><label>${f.l}</label>${f.h}</div>`).join(''); }
+const footBtns = fn => `<div class="modal-foot"><button class="btn btn-s" onclick="closeModal()">Cancel</button><button class="btn btn-p" onclick="${fn}()">Save</button></div>`;
+
+function openDocModal(){
+  const next = 'DFI-XX-' + String(100+docs.length+30);
+  showModal(`<h3>New controlled document</h3>${fields([
+    {l:'Document code',h:`<input id="f_code" value="${next}">`},
+    {l:'Title',h:'<input id="f_title" placeholder="e.g. Autoclave Operation Work Instruction">'},
+    {l:'Type',h:'<select id="f_type"><option>Procedure</option><option>Work Instruction</option><option>Form</option><option>Record</option><option>Quality Manual</option></select>'},
+    {l:'Owner / department',h:'<input id="f_owner" placeholder="e.g. QC Lab">'},
+    {l:'Next review date',h:`<input id="f_review" type="date" value="${addDays(365)}">`}
+  ])}${footBtns('saveDoc')}`);
+}
+function saveDoc(){
+  const t=$('f_title').value.trim(); if(!t) return toast('Title is required');
+  docs.unshift({code:$('f_code').value.trim(), title:t, type:$('f_type').value, rev:'01', status:'Draft', owner:$('f_owner').value.trim()||'—', review:$('f_review').value});
+  log(`${docs[0].code} created as Draft rev.01.`); closeModal(); renderDocs(); renderDash(); toast('Document added as Draft');
+}
+
+function openNcrModal(){
+  const id = 'NCR-2026-' + String(15 + ncrs.filter(n=>n.id.includes('2026')).length - 3 + 15).padStart(3,'0');
+  showModal(`<h3>Raise nonconformity</h3>${fields([
+    {l:'NCR number',h:`<input id="f_nid" value="NCR-2026-${String(ncrs.length+12).padStart(3,'0')}">`},
+    {l:'Source',h:'<select id="f_src"><option>In-process QC</option><option>Incoming inspection</option><option>Customer complaint</option><option>Internal audit</option><option>Supplier</option></select>'},
+    {l:'Description of nonconformity',h:'<textarea id="f_desc" placeholder="What was found, where, quantity, lot number…"></textarea>'},
+    {l:'Severity',h:'<select id="f_sev"><option>Minor</option><option>Major</option><option>Critical</option></select>'}
+  ])}${footBtns('saveNcr')}`);
+}
+function saveNcr(){
+  const d=$('f_desc').value.trim(); if(!d) return toast('Description is required');
+  ncrs.unshift({id:$('f_nid').value.trim(), date:iso(today), source:$('f_src').value, desc:d, severity:$('f_sev').value, status:'Open', capa:'—'});
+  log(`${ncrs[0].id} raised (${ncrs[0].severity}) — ${ncrs[0].source}.`); closeModal(); renderNcr(); renderDash(); toast('NCR raised');
+}
+
+function openCapaModal(){
+  showModal(`<h3>New CAPA</h3>${fields([
+    {l:'CAPA number',h:`<input id="f_cid" value="CAPA-2026-${String(capas.length+7).padStart(3,'0')}">`},
+    {l:'Linked to (NCR / audit / complaint)',h:'<input id="f_clink" placeholder="e.g. NCR-2026-015">'},
+    {l:'Corrective / preventive action',h:'<textarea id="f_cact"></textarea>'},
+    {l:'Owner',h:'<input id="f_cowner">'},
+    {l:'Due date',h:`<input id="f_cdue" type="date" value="${addDays(21)}">`}
+  ])}${footBtns('saveCapa')}`);
+}
+function saveCapa(){
+  const a=$('f_cact').value.trim(); if(!a) return toast('Action is required');
+  capas.unshift({id:$('f_cid').value.trim(), link:$('f_clink').value.trim()||'—', action:a, owner:$('f_cowner').value.trim()||'—', due:$('f_cdue').value, status:'In Progress'});
+  log(`${capas[0].id} opened — owner ${capas[0].owner}, due ${capas[0].due}.`); closeModal(); renderCapa(); renderDash(); toast('CAPA created');
+}
+
+function openAuditModal(){
+  showModal(`<h3>Schedule internal audit</h3>${fields([
+    {l:'Audit number',h:`<input id="f_aid" value="A-2026-${String(audits.length+1).padStart(2,'0')}">`},
+    {l:'Area / clause',h:'<input id="f_aarea" placeholder="e.g. Warehouse & Preservation (Cl. 8.5.4)">'},
+    {l:'Auditor',h:'<input id="f_aauditor">'},
+    {l:'Planned date',h:`<input id="f_adate" type="date" value="${addDays(30)}">`}
+  ])}${footBtns('saveAudit')}`);
+}
+function saveAudit(){
+  const ar=$('f_aarea').value.trim(); if(!ar) return toast('Area is required');
+  audits.push({id:$('f_aid').value.trim(), area:ar, auditor:$('f_aauditor').value.trim()||'TBD', date:$('f_adate').value, status:'Scheduled', findings:'—'});
+  log(`${audits[audits.length-1].id} scheduled for ${audits[audits.length-1].date}.`); closeModal(); renderAudits(); renderDash(); toast('Audit scheduled');
+}
+
+function openMrmModal(){
+  showModal(`<h3>New management review</h3>${fields([
+    {l:'MRM number',h:`<input id="f_mid" value="MRM-2026-${String(mrms.length+1).padStart(2,'0')}">`},
+    {l:'Date',h:`<input id="f_mdate" type="date" value="${addDays(14)}">`},
+    {l:'Chairperson',h:'<input id="f_mchair" value="Jaimin Shah">'},
+    {l:'Planned inputs (Cl. 9.3.2)',h:'<textarea id="f_minputs" placeholder="Audit results, customer feedback, process performance, CAPA status…"></textarea>'}
+  ])}${footBtns('saveMrm')}`);
+}
+function saveMrm(){
+  mrms.push({id:$('f_mid').value.trim(), date:$('f_mdate').value, chair:$('f_mchair').value.trim(), inputs:$('f_minputs').value.trim()||'—', decisions:'—', status:'Planned'});
+  log(`${mrms[mrms.length-1].id} planned for ${mrms[mrms.length-1].date}.`); closeModal(); renderMrm(); renderDash(); toast('Review planned');
+}
+
+function openTrainModal(){
+  showModal(`<h3>Log training record</h3>${fields([
+    {l:'Employee / group',h:'<input id="f_temp">'},
+    {l:'Topic',h:'<input id="f_ttopic">'},
+    {l:'Reference document',h:'<input id="f_tdoc" placeholder="e.g. DFI-WI-025">'},
+    {l:'Training date',h:`<input id="f_tdate" type="date" value="${iso(today)}">`}
+  ])}${footBtns('saveTrain')}`);
+}
+function saveTrain(){
+  const e=$('f_temp').value.trim(); if(!e) return toast('Employee is required');
+  const d=$('f_tdate').value, v=new Date(d); v.setFullYear(v.getFullYear()+1);
+  trainings.unshift({emp:e, topic:$('f_ttopic').value.trim()||'—', doc:$('f_tdoc').value.trim()||'—', date:d, valid:iso(v), status:'Valid'});
+  log(`Training logged for ${e} — ${trainings[0].topic}.`); closeModal(); renderTrain(); toast('Training recorded');
+}
+
+/* ================= INIT ================= */
+renderDash(); renderDocs(); renderNcr(); renderCapa(); renderAudits(); renderMrm(); renderTrain();
+</script>
+</body>
+</html>
